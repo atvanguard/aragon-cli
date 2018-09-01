@@ -129,6 +129,10 @@ exports.handler = function ({
     {
       title: 'Publish app to APM',
       task: async (ctx) => {
+        const requestEthereumArtifact = require(path.join(cwd, 'build/contracts', 'RequestEthereum'))
+        const networkId = await ctx.web3.eth.net.getId();
+        // requestEthereumAddress is required to be passed as a constructor argument to InvoicingApp contract
+        const requestEthereumAddress = requestEthereumArtifact.networks[networkId].address;
         const publishParams = {
           alreadyCompiled: true,
           provider: 'ipfs',
@@ -144,7 +148,8 @@ exports.handler = function ({
           web3: ctx.web3,
           apm: apmOptions,
           automaticallyBump: true,
-          getRepo: true
+          getRepo: true,
+          init: [requestEthereumAddress]
         }
         return publish.task(publishParams)
       },
